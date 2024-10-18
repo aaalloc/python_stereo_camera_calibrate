@@ -1,5 +1,5 @@
-camera0: 4
-camera1: 6
+camera0: rtsp://cameras-relay:8554/camera1
+camera1: rtsp://cameras-relay:8554/camera2
 frame_width: 1280
 frame_height: 720
 mono_calibration_frames: 10
