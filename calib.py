@@ -2,6 +2,7 @@ import cv2 as cv
 import glob
 import numpy as np
 import sys
+from pathlib import Path
 from scipy import linalg
 import yaml
 import os
@@ -34,13 +35,13 @@ def parse_calibration_settings_file(filename):
 
     global calibration_settings
 
-    if not os.path.exists(filename):
+    if not Path.exists(filename):
         print('File does not exist:', filename)
         quit()
 
     print('Using for calibration settings: ', filename)
 
-    with open(filename) as f:
+    with Path.open(filename) as f:
         calibration_settings = yaml.safe_load(f)
 
     # rudimentray check to make sure correct file was loaded
@@ -53,8 +54,8 @@ def parse_calibration_settings_file(filename):
 def save_frames_single_camera(camera_name):
 
     # create frames directory
-    if not os.path.exists('frames'):
-        os.mkdir('frames')
+    if not Path.exists('frames'):
+        Path.mkdir('frames')
 
     # get settings
     camera_device_id = calibration_settings[camera_name]
