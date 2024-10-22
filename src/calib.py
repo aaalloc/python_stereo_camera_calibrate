@@ -3,17 +3,26 @@ import sys
 import os
 from pathlib import Path
 
-from src.utils.calibration import calibrate_camera_for_intrinsic_parameters, check_calibration, stereo_calibrate
-from src.utils.config import load_cam_instric_data, load_cam_rot_trans_data, parse_calibration_settings_file, save_extrinsic_calibration_parameters
-from src.utils.save import save_camera_intrinsics, save_frames_single_camera, save_frames_two_cams
+from utils.calibration import calibrate_camera_for_intrinsic_parameters, check_calibration, stereo_calibrate
+from utils.config import load_cam_instric_data, load_cam_rot_trans_data, parse_calibration_settings_file, save_extrinsic_calibration_parameters
+from utils.save import save_camera_intrinsics, save_frames_single_camera, save_frames_two_cams
 from argparse import ArgumentParser
 
 # save camera intrinsic parameters to file
+
+
+def check_path(x):
+    if Path(x).exists():
+        return x
+    else:
+        raise FileNotFoundError(f"{x} not found")
+
+
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='Stereo camera calibration')
-    parser.add_argument('settings',
-                        type=lambda x: Path(x).exists(),
+    parser.add_argument('--settings',
+                        type=lambda x: check_path(x),
                         help='Settings file',
                         default='calibration_settings.yaml')
     parser.add_argument('--camera0',
@@ -31,7 +40,7 @@ if __name__ == '__main__':
                         default='output_frames')
     parser.add_argument('--output_frames_pair',
                         type=str,
-                        default='output_frames',
+                        default='output_frames_pair',
                         help='Output folder for paired frames')
     parser.add_argument('--output_intrinsics',
                         type=str,
@@ -43,20 +52,25 @@ if __name__ == '__main__':
                         help='Load camera rotation/translation/intrinsics param from folder, (will skip calibration)',
                         default=None)
 
-    parser.parse_args()
+    parser = parser.parse_args()
 
+    print(f"Path to settings file: {parser.settings}")
     calibration_settings = parse_calibration_settings_file(parser.settings)
 
     match parser.load_cam_param_folder is not None:
         case False:
             print("Calibrating cameras")
             """Step1. Save calibration frames for single cameras"""
-            save_frames_single_camera('camera0', parser.output_frames)
-            save_frames_single_camera('camera1', parser.output_frames)
+            if not Path(parser.output_frames).exists():
+                save_frames_single_camera(
+                    'camera0', calibration_settings, parser.output_frames)
+                save_frames_single_camera(
+                    'camera1',  calibration_settings, parser.output_frames)
 
             """Step2. Obtain camera intrinsic matrices and save them"""
             def camera_instrinsics(camera_name):
-                images_prefix = os.path.join('frames', f'{camera_name}*')
+                images_prefix = os.path.join(
+                    parser.output_frames, f'{camera_name}*')
                 cmtx, dist = calibrate_camera_for_intrinsic_parameters(
                     images_prefix, calibration_settings)
                 save_camera_intrinsics(

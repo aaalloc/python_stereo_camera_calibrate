@@ -1,4 +1,4 @@
-from cv2 import cv2 as cv
+import cv2 as cv
 import os
 
 
@@ -25,7 +25,6 @@ def save_camera_intrinsics(camera_matrix, distortion_coefs, camera_name, output_
 
 
 def save_frames_single_camera(camera_name, calibration_settings, output_folder):
-
     # create frames directory
     if not os.path.exists(output_folder):
         os.mkdir(output_folder)
@@ -49,7 +48,6 @@ def save_frames_single_camera(camera_name, calibration_settings, output_folder):
     saved_count = 0
 
     while True:
-
         ret, frame = cap.read()
         if ret == False:
             # if no video data is received, can't calibrate the camera, so exit.
@@ -73,7 +71,7 @@ def save_frames_single_camera(camera_name, calibration_settings, output_folder):
             # save the frame when cooldown reaches 0.
             if cooldown <= 0:
                 savename = os.path.join(
-                    'frames', camera_name + '_' + str(saved_count) + '.png')
+                    output_folder, camera_name + '_' + str(saved_count) + '.png')
                 cv.imwrite(savename, frame)
                 saved_count += 1
                 cooldown = cooldown_time
@@ -96,6 +94,7 @@ def save_frames_single_camera(camera_name, calibration_settings, output_folder):
     cv.destroyAllWindows()
 
 
+# TODO: to refactor because main thread is provoking latency
 def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, output_folder):
 
     # create frames directory
@@ -157,11 +156,11 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
             # save the frame when cooldown reaches 0.
             if cooldown <= 0:
                 savename = os.path.join(
-                    'frames_pair', camera0_name + '_' + str(saved_count) + '.png')
+                    output_folder, camera0_name + '_' + str(saved_count) + '.png')
                 cv.imwrite(savename, frame0)
 
                 savename = os.path.join(
-                    'frames_pair', camera1_name + '_' + str(saved_count) + '.png')
+                    output_folder, camera1_name + '_' + str(saved_count) + '.png')
                 cv.imwrite(savename, frame1)
 
                 saved_count += 1

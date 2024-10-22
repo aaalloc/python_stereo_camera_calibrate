@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 import glob
 
-from src.utils.operation import get_projection_matrix
+from utils.operation import get_projection_matrix
 
 # open paired calibration frames and stereo calibrate for cam0 to cam1 coorindate transformations
 
@@ -72,10 +72,10 @@ def stereo_calibrate(mtx0, dist0, mtx1, dist1, frames_prefix_c0, frames_prefix_c
             if k & 0xFF == ord('s'):
                 print('skipping')
                 continue
-
-            objpoints.append(objp)
-            imgpoints_left.append(corners1)
-            imgpoints_right.append(corners2)
+            else:
+                objpoints.append(objp)
+                imgpoints_left.append(corners1)
+                imgpoints_right.append(corners2)
 
     stereocalibration_flags = cv.CALIB_FIX_INTRINSIC
     ret, CM1, dist0, CM2, dist1, R, T, E, F = cv.stereoCalibrate(objpoints, imgpoints_left, imgpoints_right, mtx0, dist0,
@@ -134,7 +134,7 @@ def calibrate_camera_for_intrinsic_parameters(images_prefix, calibration_setting
             corners = cv.cornerSubPix(
                 gray, corners, conv_size, (-1, -1), criteria)
             cv.drawChessboardCorners(frame, (rows, columns), corners, ret)
-            cv.putText(frame, 'If detected points are poor, press "s" to skip this sample',
+            cv.putText(frame, 'If detected points are poor, press "s" to skip this sample, else press any key',
                        (25, 25), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
 
             cv.imshow('img', frame)
@@ -143,9 +143,9 @@ def calibrate_camera_for_intrinsic_parameters(images_prefix, calibration_setting
             if k & 0xFF == ord('s'):
                 print('skipping')
                 continue
-
-            objpoints.append(objp)
-            imgpoints.append(corners)
+            else:
+                objpoints.append(objp)
+                imgpoints.append(corners)
 
     cv.destroyAllWindows()
     ret, cmtx, dist, rvecs, tvecs = cv.calibrateCamera(
