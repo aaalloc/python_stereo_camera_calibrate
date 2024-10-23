@@ -1,3 +1,4 @@
 output_frames/
 output_frames_pair/
-camera_parameters/
+camera_parameters/camera1_rot_trans.dat
+camera_parameters/camera0_rot_trans.dat

@@ -1,11 +1,19 @@
-camera0: rtsp://metacam:8554/camera1
-camera1: rtsp://metacam:8554/camera2
+camera0: rtsp://metacam:8554/camera2
+camera1: rtsp://metacam:8554/camera1
 frame_width: 1280
 frame_height: 720
 mono_calibration_frames: 10
 stereo_calibration_frames: 10
-view_resize: 1
-checkerboard_box_size_scale : 2.8
-checkerboard_rows: 4
-checkerboard_columns: 6
+view_resize: 1.5
+# with tablet
+# checkerboard_box_size_scale : 2.8
+# with BIG TV
+checkerboard_box_size_scale : 1.5
+# with tablet
+# checkerboard_rows: 4
+# checkerboard_columns: 6
+# with BIG TV 
+checkerboard_rows: 15
+checkerboard_columns: 21
+
 cooldown: 100

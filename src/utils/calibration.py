@@ -200,6 +200,8 @@ def check_calibration(camera0_name, camera0_data, camera1_name, camera1_data, _z
     # these contain the pixel coorindates in each camera view as: (pxl_x, pxl_y)
     pixel_points_camera0 = np.array(pixel_points_camera0)
     pixel_points_camera1 = np.array(pixel_points_camera1)
+    print(pixel_points_camera0)
+    print(pixel_points_camera1)
 
     # open the video streams
     cap0 = cv.VideoCapture(calibration_settings[camera0_name])
@@ -235,6 +237,16 @@ def check_calibration(camera0_name, camera0_data, camera1_name, camera1_data, _z
         for col, _p in zip(colors, pixel_points_camera1[1:]):
             _p = tuple(_p.astype(np.int32))
             cv.line(frame1, origin, _p, col, 2)
+
+        # current_width_frame1 = frame1.shape[1]
+        # current_height_frame1 = frame1.shape[0]
+        # frame0 = cv.resize(frame1, None, fx=current_width_frame1 /
+        #                    width, fy=current_height_frame1/height)
+
+        # current_width_frame0 = frame0.shape[1]
+        # current_height_frame0 = frame0.shape[0]
+        # frame0 = cv.resize(frame0, None, fx=current_width_frame0 /
+        #                    width, fy=current_height_frame0/height)
 
         cv.imshow('frame0', frame0)
         cv.imshow('frame1', frame1)

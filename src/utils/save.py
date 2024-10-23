@@ -1,5 +1,6 @@
 import cv2 as cv
 import os
+from .video_capture import VideoCapture
 
 
 def save_camera_intrinsics(camera_matrix, distortion_coefs, camera_name, output_folder):
@@ -34,7 +35,7 @@ def save_frames_single_camera(camera_name, calibration_settings, output_folder):
     width = calibration_settings['frame_width']
     height = calibration_settings['frame_height']
     number_to_save = calibration_settings['mono_calibration_frames']
-    view_resize = calibration_settings['view_resize']
+    # view_resize = calibration_settings['view_resize']
     cooldown_time = calibration_settings['cooldown']
 
     # open video stream and change resolution.
@@ -54,8 +55,10 @@ def save_frames_single_camera(camera_name, calibration_settings, output_folder):
             print("No video data received from camera. Exiting...")
             quit()
 
+        current_width = frame.shape[1]
+        current_height = frame.shape[0]
         frame_small = cv.resize(
-            frame, None, fx=1/view_resize, fy=1/view_resize)
+            frame, None, fx=width/current_width, fy=height/current_height)
 
         if not start:
             cv.putText(frame_small, "Press SPACEBAR to start collection frames",
@@ -92,9 +95,11 @@ def save_frames_single_camera(camera_name, calibration_settings, output_folder):
             break
 
     cv.destroyAllWindows()
-
+    cap.release()
 
 # TODO: to refactor because main thread is provoking latency
+
+
 def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, output_folder):
 
     # create frames directory
@@ -107,24 +112,26 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
     number_to_save = calibration_settings['stereo_calibration_frames']
 
     # open the video streams
-    cap0 = cv.VideoCapture(calibration_settings[camera0_name])
-    cap1 = cv.VideoCapture(calibration_settings[camera1_name])
+    vs0 = VideoCapture(calibration_settings[camera0_name])
+    vs1 = VideoCapture(calibration_settings[camera1_name])
+    # cap0 = cv.VideoCapture(calibration_settings[camera0_name])
+    # cap1 = cv.VideoCapture(calibration_settings[camera1_name])
 
     # set camera resolutions
     width = calibration_settings['frame_width']
     height = calibration_settings['frame_height']
-    cap0.set(3, width)
-    cap0.set(4, height)
-    cap1.set(3, width)
-    cap1.set(4, height)
+    vs0.set_cap_flag(3, width)
+    vs0.set_cap_flag(4, height)
+    vs1.set_cap_flag(3, width)
+    vs1.set_cap_flag(4, height)
 
     cooldown = cooldown_time
     start = False
     saved_count = 0
     while True:
 
-        ret0, frame0 = cap0.read()
-        ret1, frame1 = cap1.read()
+        ret0, frame0 = vs0.read()
+        ret1, frame1 = vs1.read()
 
         if not ret0 or not ret1:
             print('Cameras not returning video data. Exiting...')
@@ -183,3 +190,5 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
             break
 
     cv.destroyAllWindows()
+    vs0.stop()
+    vs1.stop()
