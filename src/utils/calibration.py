@@ -48,8 +48,8 @@ def stereo_calibrate(mtx0, dist0, mtx1, dist1, frames_prefix_c0, frames_prefix_c
         c_ret2, corners2 = cv.findChessboardCorners(
             gray2, (rows, columns), None)
 
+        print(f"Checkerboard found: c1={c_ret1}, c2={c_ret2}")
         if c_ret1 == True and c_ret2 == True:
-
             corners1 = cv.cornerSubPix(
                 gray1, corners1, (11, 11), (-1, -1), criteria)
             corners2 = cv.cornerSubPix(
@@ -76,6 +76,8 @@ def stereo_calibrate(mtx0, dist0, mtx1, dist1, frames_prefix_c0, frames_prefix_c
                 objpoints.append(objp)
                 imgpoints_left.append(corners1)
                 imgpoints_right.append(corners2)
+        else:
+            print('checkerboard not found')
 
     stereocalibration_flags = cv.CALIB_FIX_INTRINSIC
     ret, CM1, dist0, CM2, dist1, R, T, E, F = cv.stereoCalibrate(objpoints, imgpoints_left, imgpoints_right, mtx0, dist0,

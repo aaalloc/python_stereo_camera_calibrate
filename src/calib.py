@@ -119,6 +119,7 @@ if __name__ == '__main__':
                 parser.output_frames_pair, 'camera0*')
             frames_prefix_c1 = os.path.join(
                 parser.output_frames_pair, 'camera1*')
+            print(frames_prefix_c0, frames_prefix_c1)
             r, t = stereo_calibrate(cmtx0, dist0, cmtx1, dist1,
                                     frames_prefix_c0, frames_prefix_c1, calibration_settings)
 
@@ -138,17 +139,19 @@ if __name__ == '__main__':
             cmtx1, dist1 = load_cam_instric_data(
                 Path(f"{parser.load_cam_param_folder}/camera1_intrinsics.dat"))
 
-            r0, t0 = load_cam_rot_trans_data(
-                Path(f"{parser.load_cam_param_folder}/camera0_rot_trans.dat")
-            )
-            r1, t1 = load_cam_rot_trans_data(
-                Path(f"{parser.load_cam_param_folder}/camera1_rot_trans.dat")
-            )
+            if not Path(f"{parser.load_cam_param_folder}/camera0_rot_trans.dat").exists():
+                r0, t0 = load_cam_rot_trans_data(
+                    Path(f"{parser.load_cam_param_folder}/camera0_rot_trans.dat")
+                )
+            if not Path(f"{parser.load_cam_param_folder}/camera1_rot_trans.dat").exists():
+                r1, t1 = load_cam_rot_trans_data(
+                    Path(f"{parser.load_cam_param_folder}/camera1_rot_trans.dat")
+                )
 
-    camera0_data = [cmtx0, dist0, r0, t0]
-    camera1_data = [cmtx1, dist1, r1, t1]
-    check_calibration('camera0', camera0_data, 'camera1',
-                      camera1_data, _zshift=150., calibration_settings=calibration_settings)
+    # camera0_data = [cmtx0, dist0, r0, t0]
+    # camera1_data = [cmtx1, dist1, r1, t1]
+    # check_calibration('camera0', camera0_data, 'camera1',
+    #                   camera1_data, _zshift=150., calibration_settings=calibration_settings)
 
     """Optional. Define a different origin point and save the calibration data"""
     # #get the world to camera0 rotation and translation
