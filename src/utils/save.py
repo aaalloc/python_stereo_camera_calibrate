@@ -174,6 +174,7 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
                 savename = os.path.join(
                     output_folder, camera1_name + '_' + str(saved_count) + '.png')
                 cv.imwrite(savename, frame1)
+                saved_count += 1
 
         if saved_count == number_to_save:
             break
