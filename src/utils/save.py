@@ -125,7 +125,6 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
     vs1.set_cap_flag(3, width)
     vs1.set_cap_flag(4, height)
 
-    cooldown = cooldown_time
     start = False
     saved_count = 0
     while True:
@@ -149,19 +148,25 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
                        (50, 100), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 1)
 
         if start:
-            cooldown -= 1
-            cv.putText(frame0_small, "Cooldown: " + str(cooldown),
-                       (50, 50), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 1)
             cv.putText(frame0_small, "Num frames: " + str(saved_count),
                        (50, 100), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 1)
 
-            cv.putText(frame1_small, "Cooldown: " + str(cooldown),
-                       (50, 50), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 1)
             cv.putText(frame1_small, "Num frames: " + str(saved_count),
                        (50, 100), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 1)
 
-            # save the frame when cooldown reaches 0.
-            if cooldown <= 0:
+        cv.imshow('frame0_small', frame0_small)
+        cv.imshow('frame1_small', frame1_small)
+        k = cv.waitKey(1)
+
+        match k:
+            case 27:
+                # if ESC is pressed at any time, the program will exit.
+                quit()
+            case 32:
+                # Press spacebar to start data collection
+                start = True
+            # when k is pressed
+            case 107:
                 savename = os.path.join(
                     output_folder, camera0_name + '_' + str(saved_count) + '.png')
                 cv.imwrite(savename, frame0)
@@ -170,22 +175,6 @@ def save_frames_two_cams(camera0_name, camera1_name, calibration_settings, outpu
                     output_folder, camera1_name + '_' + str(saved_count) + '.png')
                 cv.imwrite(savename, frame1)
 
-                saved_count += 1
-                cooldown = cooldown_time
-
-        cv.imshow('frame0_small', frame0_small)
-        cv.imshow('frame1_small', frame1_small)
-        k = cv.waitKey(1)
-
-        if k == 27:
-            # if ESC is pressed at any time, the program will exit.
-            quit()
-
-        if k == 32:
-            # Press spacebar to start data collection
-            start = True
-
-        # break out of the loop when enough number of frames have been saved
         if saved_count == number_to_save:
             break
 

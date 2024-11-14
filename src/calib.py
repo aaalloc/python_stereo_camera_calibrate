@@ -100,8 +100,15 @@ if __name__ == '__main__':
                             Path(f"{parser.output_intrinsics}/{camera_name}_intrinsics.dat"))
                 return cmtx, dist
 
-            cmtx0, dist0 = camera_instrinsics('camera0')
-            cmtx1, dist1 = camera_instrinsics('camera1')
+            path_cam = Path("camera_parameters")
+            if not path_cam.exists():
+                cmtx0, dist0 = camera_instrinsics('camera0')
+                cmtx1, dist1 = camera_instrinsics('camera1')
+            else:
+                cmtx0, dist0 = load_cam_instric_data(
+                    Path(f"{path_cam}/camera0_intrinsics.dat"))
+                cmtx1, dist1 = load_cam_instric_data(
+                    Path(f"{path_cam}/camera1_intrinsics.dat"))
             print(cmtx0, dist0)
             print(cmtx1, dist1)
 
