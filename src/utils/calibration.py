@@ -16,8 +16,15 @@ def stereo_calibrate(mtx0, dist0, mtx1, dist1, frames_prefix_c0, frames_prefix_c
     c0_images = [cv.imread(imname, 1) for imname in c0_images_names]
     c1_images = [cv.imread(imname, 1) for imname in c1_images_names]
 
+    # resize images to the same size
+    c0_images = [cv.resize(im, (calibration_settings['frame_width'],
+                           calibration_settings['frame_height'])) for im in c0_images]
+    c1_images = [cv.resize(im, (calibration_settings['frame_width'],
+                           calibration_settings['frame_height'])) for im in c1_images]
+
     # change this if stereo calibration not good.
-    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 100, 0.001)
+    criteria = (cv.TERM_CRITERIA_EPS +
+                cv.TERM_CRITERIA_MAX_ITER, 30, 0.0001)
 
     # calibration pattern settings
     rows = calibration_settings['checkerboard_rows']
@@ -96,10 +103,12 @@ def calibrate_camera_for_intrinsic_parameters(images_prefix, calibration_setting
 
     # read all frames
     images = [cv.imread(imname, 1) for imname in images_names]
+    images = [cv.resize(im, (calibration_settings['frame_width'],
+                             calibration_settings['frame_height'])) for im in images]
 
     # criteria used by checkerboard pattern detector.
     # Change this if the code can't find the checkerboard.
-    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 100, 0.001)
+    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 1000, 0.001)
 
     rows = calibration_settings['checkerboard_rows']
     columns = calibration_settings['checkerboard_columns']

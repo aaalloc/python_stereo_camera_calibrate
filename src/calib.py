@@ -101,7 +101,8 @@ if __name__ == '__main__':
                 return cmtx, dist
 
             path_cam = Path("camera_parameters")
-            if not path_cam.exists():
+            path_contains_files = any(path_cam.iterdir())
+            if not path_cam.exists() or not path_contains_files:
                 cmtx0, dist0 = camera_instrinsics('camera0')
                 cmtx1, dist1 = camera_instrinsics('camera1')
             else:
